@@ -1,0 +1,52 @@
+{
+  "name": "light-reader-electron",
+  "version": "2.0.0",
+  "main": "dist-electron/main/index.js",
+  "description": "Really light reader",
+  "author": "边缘坐标 <edgecoordinates@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "keywords": [
+    "electron",
+    "rollup",
+    "vite",
+    "vue3",
+    "vue"
+  ],
+  "debug": {
+    "env": {
+      "VITE_DEV_SERVER_URL": "http://127.0.0.1:3344/"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build && electron-builder",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.3.3",
+    "autoprefixer": "^10.4.16",
+    "boxicons": "^2.1.4",
+    "daisyui": "^4.4.17",
+    "electron": "^26.0.0",
+    "electron-builder": "^24.6.3",
+    "electron-store": "^8.1.0",
+    "naive-ui": "^2.35.0",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.3.5",
+    "tree-kill": "^1.2.2",
+    "typescript": "^5.1.6",
+    "vite": "^4.4.9",
+    "vite-plugin-electron": "^0.15.3",
+    "vite-plugin-electron-renderer": "^0.14.5",
+    "vue": "^3.3.4",
+    "vue-tsc": "^1.8.8",
+    "vue-virtual-scroll-list": "^2.3.5"
+  },
+  "dependencies": {
+    "fs-extra": "^11.2.0",
+    "iconv-lite": "^0.6.3",
+    "jschardet": "^3.0.0",
+    "pinia": "^2.1.7"
+  }
+}
