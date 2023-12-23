@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import TXTV from './components/reader/TXTV.vue'
+import { RouterLink, RouterView } from "vue-router";
 import themeOverrides from "./theme";
 </script>
 
@@ -11,7 +11,7 @@ import themeOverrides from "./theme";
     <n-config-provider :theme-overrides="themeOverrides">
         <n-dialog-provider>
             <n-message-provider>
-                <TXTV></TXTV>
+                <RouterView />
             </n-message-provider>
         </n-dialog-provider>
     </n-config-provider>

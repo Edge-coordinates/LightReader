@@ -30,28 +30,38 @@ export function fileReader (path: string): any {
   })
 }
 
-function generate_directory_listing(lines, regExp) {
-    let count = 0, line, tmpMenu;
-    let left = 0,
-    right = 0;
-    for (line of lines) {
-      if (regExp.test(line)) {
-        tmpMenu.push(line);
-        // menu.append(`<a class="mdui-list-item chapter_num" num=${count}>${line}</a>`);
-      }
-      right++;
-    }
-    // 重置渲染计数器
-    novel_menu_r[count] = right;
-    right = 0;
-    // console.log(menuOptions);
+export function gengerateArrDate (data) {
+  return data.split(/\r?\n/)
+}
+
+export function generateDirectoryList (lines, regExp) {
+  let chapterOne = { label: '前言', key: 0, lline: 0, rline:0 } // rline 需要更新, l, r为两端闭区间
+  let count = 1, // 这是在默认加载ChapterOne的情况下
+    line = lines[0],
+    tmpMenu = <any>[]
+
+  if (!regExp.test(line)) {
+    tmpMenu = [chapterOne]
+  } else {
+    tmpMenu.push({label: line, key: count, lline: 0})
   }
-
-export function getMenu(data) {
-    let lines = data.split(/\r?\n/);
-
-    return {
-        menu:["前言",],
-        arrdata:[],
+  for (let i = 1;  i < lines.length; i++) {
+    line = lines[i]
+    if (regExp.test(line)) {
+      tmpMenu[tmpMenu.length - 1].rline = i-1
+      tmpMenu.push({label: line, key: count, line: i})
+      // menu.append(`<a class="mdui-list-item chapter_num" num=${count}>${line}</a>`);
     }
+  }
+  return tmpMenu
+  // console.log(menuOptions);
+}
+
+export function getMenu (data) {
+  let lines = data.split(/\r?\n/)
+
+  return {
+    menu: [{ label: '前言', key: '0' }],
+    arrdata: []
+  }
 }

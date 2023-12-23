@@ -1,75 +1,102 @@
-<script lang="ts">
-import { DrawerPlacement } from 'naive-ui'
-import { ref } from 'vue'
-import { useBookStatusStore } from '@/stores/bookStatus';
-import path from "path"
-import { fileReader, getMenu } from './txtBookParser';
-
+<script setup lang="ts">
 import Header from './Header.vue'
 import BookMenu from './BookMenu.vue'
 import BookContent from './BookContent.vue'
 
-export default {
-    components: {
-        Header,
-        BookMenu,
-        BookContent,
-    },
-    methods: {
-        prebook() {
-            this.fileExtension = this.filepath.split(".").pop().toLowerCase();
-            this.bookMeta.path = this.filepath
-            this.bookMeta.fileExtension = this.fileExtension
-            this.bookMeta.filename = path.basename(this.filepath);
-            this.bookMeta.title = path.parse(this.filepath).name;
-            this.isBookOpen = true;
-        },
-        openTheBook(file: any) {
-            this.filepath = file.file.file.path;
-            // this.bookContent = fileReader(this.filepath)
-            fileReader(this.filepath).then((result) => {
-                this.bookContent = result
-                this.prebook();
-            })
-            let tmp = getMenu(this.bookContent.data)
-            this.bookContent.menu = tmp.menu 
-            this.bookContent.arrdata = tmp.arrdata
-            console.log(this.filepath, this.fileExtension, this.isBookOpen)
-            return false;
-        },
-        consolea() {
-            // this.isBookOpen = !this.isBookOpen
-            console.log(this.isBookOpen)
-        }
-    },
-    data() {
-        return {
-            placement: ref<DrawerPlacement>('left'),
-            isBookOpen: false,
-            bookStatus: useBookStatusStore(),
-            filepath: "",
-            fileExtension: "",
-            bookContent: <any>{
-                data: '',
-                arrdata: [],
-                menu: [],
-                ecodes: [],
-            },
-            bookMeta: <any>{},
-            chapterID: ''
-        }
-    },
-    computed: {
-        chapterData() {
-            // 更具data获取
-            return ''
-        }
-    }
+import { DrawerPlacement } from 'naive-ui'
+import path from "path"
+import { fileReader, gengerateArrDate, generateDirectoryList } from './txtBookParser';
+
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { RouterLink, RouterView } from "vue-router";
+import { useBookStatusStore } from '@/stores/bookStatus';
+
+interface BookContent {
+    data: any,
+    arrdata: any[],
+    menu: {
+        label: string,
+        key: string,
+    }[],
+    ecodes: any[],
 }
+
+// 响应式状态
+const isBookOpen = ref(false)
+const bookStatus = useBookStatusStore()
+const filepath = ref("")
+const fileExtension = ref("")
+const bookContent = ref<BookContent>({
+    data: '',
+    arrdata: [],
+    menu: [],
+    ecodes: [],
+})
+const bookMeta = ref({
+    title: '',
+    path: '',
+    fileExtension: '',
+    filename: '',
+})
+const readerConf = ref({
+    regulars: [],
+    placement: <DrawerPlacement>('left') // 菜单栏打开位置
+})
+const chapterID = ref('')
+
+// 计算属性
+const chapterData = computed(() => {
+    // 更具data获取
+    return ''
+})
+
+// 方法
+function prebook() {
+    // init Meta 
+    fileExtension.value = filepath.value.split(".").pop().toLowerCase()
+    bookMeta.value.path = filepath.value
+    bookMeta.value.fileExtension = fileExtension.value
+    bookMeta.value.filename = path.basename(filepath.value)
+    bookMeta.value.title = path.parse(filepath.value).name
+    // opened
+    isBookOpen.value = true
+}
+
+function openTheBook(file: any) {
+    filepath.value = file.file.file.path
+    // this.bookContent = fileReader(this.filepath)
+    fileReader(filepath.value).then((result) => {
+        bookContent.value.data = result.data
+        bookContent.value.ecodes = result.ecodes
+        prebook()
+        // let tmp = getMenu(bookContent.value.data)
+        bookContent.value.arrdata = gengerateArrDate(bookContent.value.data)
+        let tmp = generateDirectoryList(bookContent.value.arrdata, new RegExp('第[一二两三四五六七八九十○零百千0-9１２３４５６７８９０]{1,12}(章|节|節)'))
+        bookContent.value.menu = tmp
+        console.log(tmp)
+        // console.log(filepath.value, fileExtension.value, isBookOpen.value)
+    })
+    return false
+}
+
+function consolea() {
+    // this.isBookOpen = !this.isBookOpen
+    console.log(isBookOpen.value)
+}
+
+// 生命周期钩子
+onMounted(() => {
+    // ...
+})
+
+onUnmounted(() => {
+    // ...
+})
 </script>
 
 <template>
     <Header :is-book-open="isBookOpen" :book-name="bookMeta.title" :file-name="bookMeta.filename"></Header>
+    <RouterLink to="/about">Go to about</RouterLink>
     <h1>{{ bookStatus.isMenuOpen }}</h1>
     <button class="btn" @click="isBookOpen = !isBookOpen">Toggle</button>
     <div id="book-content" v-if="isBookOpen">
@@ -91,8 +118,8 @@ export default {
             </n-upload-dragger>
         </n-upload>
     </div>
-    <n-drawer v-model:show="bookStatus.isMenuOpen" :width="200" :height="200" :placement="placement" :trap-focus="false"
-        :block-scroll="false" to="#book-content">
+    <n-drawer v-model:show="bookStatus.isMenuOpen" :width="200" :height="200" :placement="readerConf.placement"
+        :trap-focus="false" :block-scroll="false" to="#book-content">
         <n-drawer-content :title="bookMeta.title">
             <BookMenu :menu="bookContent.menu" />
         </n-drawer-content>

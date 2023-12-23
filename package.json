@@ -47,6 +47,7 @@
     "fs-extra": "^11.2.0",
     "iconv-lite": "^0.6.3",
     "jschardet": "^3.0.0",
-    "pinia": "^2.1.7"
+    "pinia": "^2.1.7",
+    "vue-router": "4"
   }
 }
