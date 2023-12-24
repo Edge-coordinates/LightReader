@@ -9,10 +9,14 @@ import themeOverrides from "./theme";
   </ContentMenu> -->
     <!-- 右键菜单 -->
     <n-config-provider :theme-overrides="themeOverrides">
-        <n-dialog-provider>
+        <n-loading-bar-provider>
             <n-message-provider>
-                <RouterView />
+                <n-notification-provider>
+                    <n-dialog-provider>
+                        <RouterView />
+                    </n-dialog-provider>
+                </n-notification-provider>
             </n-message-provider>
-        </n-dialog-provider>
+        </n-loading-bar-provider>
     </n-config-provider>
 </template>

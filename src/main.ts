@@ -6,6 +6,8 @@ import './style.css'
 import App from './App.vue'
 import './samples/node-api'
 
+import VueVirtualScroller from 'vue-virtual-scroller'
+
 import naive from 'naive-ui'
 const pinia = createPinia()
 const app = createApp(App)
@@ -13,6 +15,7 @@ const app = createApp(App)
 app.use(router)
 app.use(pinia)
 app.use(naive)
+app.use(VueVirtualScroller)
 app.mount('#app').$nextTick(() => {
   postMessage({ payload: 'removeLoading' }, '*')
 })

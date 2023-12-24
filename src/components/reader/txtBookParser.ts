@@ -1,3 +1,21 @@
+export interface BookMenu {
+    label: string,
+    key: string,
+    lline: Number,
+    rline: Number,
+}
+
+export interface BookContent {
+  data: any,
+  arrdata: any[],
+  menu: BookMenu[],
+  ecodes: any[],
+}
+
+
+
+
+
 const fs = require('fs-extra')
 const jschardet = require('jschardet')
 const iconv = require('iconv-lite')
@@ -36,20 +54,22 @@ export function gengerateArrDate (data) {
 
 export function generateDirectoryList (lines, regExp) {
   let chapterOne = { label: '前言', key: 0, lline: 0, rline:0 } // rline 需要更新, l, r为两端闭区间
-  let count = 1, // 这是在默认加载ChapterOne的情况下
+  let count = 1, // 首章特判
     line = lines[0],
     tmpMenu = <any>[]
 
   if (!regExp.test(line)) {
     tmpMenu = [chapterOne]
   } else {
-    tmpMenu.push({label: line, key: count, lline: 0})
+    tmpMenu.push({label: line, key: 0, lline: 0})
   }
   for (let i = 1;  i < lines.length; i++) {
     line = lines[i]
     if (regExp.test(line)) {
       tmpMenu[tmpMenu.length - 1].rline = i-1
-      tmpMenu.push({label: line, key: count, line: i})
+      // console.log(tmpMenu[tmpMenu.length - 1])
+      tmpMenu.push({label: line, key: count++, line: i})
+      // console.log(tmpMenu[tmpMenu.length - 1])
       // menu.append(`<a class="mdui-list-item chapter_num" num=${count}>${line}</a>`);
     }
   }

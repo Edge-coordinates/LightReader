@@ -6,27 +6,21 @@ import BookContent from './BookContent.vue'
 import { DrawerPlacement } from 'naive-ui'
 import path from "path"
 import { fileReader, gengerateArrDate, generateDirectoryList } from './txtBookParser';
+import { BookContent as IBookContent } from "./txtBookParser";
 
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { RouterLink, RouterView } from "vue-router";
 import { useBookStatusStore } from '@/stores/bookStatus';
 
-interface BookContent {
-    data: any,
-    arrdata: any[],
-    menu: {
-        label: string,
-        key: string,
-    }[],
-    ecodes: any[],
-}
-
 // 响应式状态
 const isBookOpen = ref(false)
+const ifMenuHidden = ref(false)
+const chapterID = ref(0)
+
 const bookStatus = useBookStatusStore()
 const filepath = ref("")
 const fileExtension = ref("")
-const bookContent = ref<BookContent>({
+const bookContent = ref<IBookContent>({
     data: '',
     arrdata: [],
     menu: [],
@@ -42,7 +36,6 @@ const readerConf = ref({
     regulars: [],
     placement: <DrawerPlacement>('left') // 菜单栏打开位置
 })
-const chapterID = ref('')
 
 // 计算属性
 const chapterData = computed(() => {
@@ -58,8 +51,6 @@ function prebook() {
     bookMeta.value.fileExtension = fileExtension.value
     bookMeta.value.filename = path.basename(filepath.value)
     bookMeta.value.title = path.parse(filepath.value).name
-    // opened
-    isBookOpen.value = true
 }
 
 function openTheBook(file: any) {
@@ -71,9 +62,11 @@ function openTheBook(file: any) {
         prebook()
         // let tmp = getMenu(bookContent.value.data)
         bookContent.value.arrdata = gengerateArrDate(bookContent.value.data)
-        let tmp = generateDirectoryList(bookContent.value.arrdata, new RegExp('第[一二两三四五六七八九十○零百千0-9１２３４５６７８９０]{1,12}(章|节|節)'))
-        bookContent.value.menu = tmp
-        console.log(tmp)
+        // 生成章节列表
+        bookContent.value.menu = generateDirectoryList(bookContent.value.arrdata, new RegExp('第[一二两三四五六七八九十○零百千0-9１２３４５６７８９０]{1,12}(章|节|節)'))
+        console.log(bookContent.value.menu)
+        // opened
+        isBookOpen.value = true
         // console.log(filepath.value, fileExtension.value, isBookOpen.value)
     })
     return false
@@ -118,12 +111,29 @@ onUnmounted(() => {
             </n-upload-dragger>
         </n-upload>
     </div>
-    <n-drawer v-model:show="bookStatus.isMenuOpen" :width="200" :height="200" :placement="readerConf.placement"
-        :trap-focus="false" :block-scroll="false" to="#book-content">
-        <n-drawer-content :title="bookMeta.title">
-            <BookMenu :menu="bookContent.menu" />
+    <n-drawer v-model:show="bookStatus.isMenuOpen" :placement="readerConf.placement" :trap-focus="false"
+        :block-scroll="false" to="#book-content" :default-width="502" resizable>
+        <n-drawer-content>
+            <template #header class="w-full">
+                <div class="flex items-center justify-between ">
+                    <div class="text-lg font-semibold">目录</div>
+                    <div class="tooltip tooltip-left" data-tip="显示/隐藏目录内容">
+                        <button class="btn btn-ghost"><i class="fa-solid fa-eye-slash fa-lg text-base-200"
+                                @click="ifMenuHidden = !ifMenuHidden"></i></button>
+                    </div>
+                </div>
+            </template>
+            <BookMenu :menu="bookContent.menu" :is-menu-open="bookStatus.isMenuOpen" :chapter-i-d="100"
+                :if-menu-hidden="ifMenuHidden" />
         </n-drawer-content>
     </n-drawer>
 </template>
 
-<style></style>
+<style>
+.n-drawer-header__main {
+    width: 100%;
+}
+.n-drawer-body-content-wrapper {
+    padding: 5px 0px 3px 12px !important ;
+}
+</style>
