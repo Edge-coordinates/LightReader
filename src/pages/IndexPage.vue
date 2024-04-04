@@ -143,4 +143,3 @@ async function onUpload(e: any) {
   }
 }
 </script>
-src/stores/bookSet-store

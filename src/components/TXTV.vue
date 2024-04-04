@@ -45,8 +45,8 @@
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
-import { NDrawer, NDrawerContent, DrawerPlacement } from 'naive-ui'
+import { onMounted, ref, watch, nextTick } from 'vue';
+import { NDrawer, NDrawerContent, DrawerPlacement, NButton } from 'naive-ui'
 
 import { generateArrDate, generateDirectoryList } from './txtBookParser'
 import { useSettingStore } from 'stores/bookSet-store';
@@ -81,9 +81,15 @@ function getChapter(lline, rline) {
   console.log(lline, rline);
   theChapter.value = arrBookData[lline]
   theContent.value = arrBookData.slice(parseInt(lline) + 1, parseInt(rline) + 1)
+  // setTimeout(() => { document.body.scrollTop = document.documentElement.scrollTop = 0; }, 700)
 }
 
 function getChapterIndex(index) {
+  // 滚动到顶端
+  nextTick().then(() => {
+    document.body.scrollTop = document.documentElement.scrollTop = 0;
+    console.log('next aaa');
+  });
   getChapter(Menu[index].lline, Menu[index].rline)
 }
 
