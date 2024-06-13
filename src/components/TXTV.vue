@@ -167,16 +167,13 @@ onMounted(() => {
   menuHeight.value = window.innerHeight - 100
 })
 
-setStore.$subscribe((mutation: any, state) => {
-  // console.log(mutation, state)
-  // 监听 章节正则表达式变化，之后重绘书籍
-  if (mutation.events.key == 'regIndex') {
-    console.log(state.regIndex)
-    // 重绘书籍
-    // TODO 动态目录重绘？
-    // reloadData()
-    initBook()
-  }
+watch(() => setStore.regIndex, (newValue, oldValue) => {
+  console.log(setStore.regIndex)
+  // 重绘书籍
+  // TODO 动态目录重绘？
+  // reloadData()
+  initBook()
+
 })
 
 // drawer的设置，勿动
